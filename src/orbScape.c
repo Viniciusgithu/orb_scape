@@ -24,8 +24,24 @@ static void customDelay() {
         while(!timerTimeOver()) {
             screenUpdate();
         }
+
     }
 }
+
+// static void customDelay() {
+//     // Define um FPS constante para evitar piscadas
+//     const int TARGET_FPS = 30;
+//     const int FRAME_TIME = 1000 / TARGET_FPS; // tempo em ms por frame
+    
+//     timerInit(FRAME_TIME);
+    
+//     // Espera até o próximo frame
+//     while(!timerTimeOver()) {
+//         // Não atualiza a tela aqui para evitar flickering
+//     }
+//     // Atualiza a tela apenas uma vez por frame
+//     screenUpdate();
+// }
 
 // Tela de Game Over
 void showGameOver() {
@@ -160,7 +176,7 @@ void updateGame() {
     // Atualiza posição dos inimigos
     for (int i = 0; i < MAX_ENEMIES; i++) {
           // Caso o inimigo não esteja ativo, pula para o próximo
-        if (!enemies[i].active) continue;
+        // if (!enemies[i].active) continue;
         
         // Move o inimigo
         enemies[i].x += enemies[i].direction * enemies[i].speed;
@@ -171,10 +187,17 @@ void updateGame() {
         }
         
         // Verifica colisão com o jogador
-        if (player.x == enemies[i].x && player.y == enemies[i].y) {
-            gameOver = 1;
-            return;
-        }
+        // if (player.x == enemies[i].x && player.y == enemies[i].y) {
+        //     gameOver = 1;
+        //     return;
+        // }
+
+        if ((player.x == enemies[i].x && player.y == enemies[i].y) ||
+            (abs(player.x - enemies[i].x) == 1 && player.y == enemies[i].y) || 
+            (abs(player.y - enemies[i].y) == 1 && player.x == enemies[i].x)) {
+             gameOver = 1;  // Acaba o jogo se houver colisão
+             return;
+}
     }
     
     // Verifica se o jogador chegou ao topo
