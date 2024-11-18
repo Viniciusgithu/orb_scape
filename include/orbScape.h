@@ -8,7 +8,7 @@
 #include "keyboard.h"
 #include "timer.h"
 
-#define MAX_ENEMIES 20
+#define MAX_ENEMIES 10
 #define INITIAL_ENEMIES 3
 #define ENEMY_ROWS 5
 
@@ -35,6 +35,11 @@ typedef struct {
     int enemyCount;
     int baseSpeed;
 } Level;
+
+typedef struct {
+    char name[50];
+    int score;
+} PlayerScore;
 
 // Funções do jogo
 void initializeGame();

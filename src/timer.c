@@ -29,7 +29,7 @@ void timerUpdateTimer(int valueMilliSec)
     gettimeofday(&timer, NULL);
 }
 
-int getTimeDiff()
+int getTimeDiff() //calcula a diferença do tempo atual com o momento do timer
 {
     gettimeofday(&now, NULL);
     long diff = (((now.tv_sec - timer.tv_sec) * 1000000) + now.tv_usec - timer.tv_usec)/1000;
