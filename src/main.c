@@ -29,12 +29,10 @@ int main() {
             }
         }
         
-        // Mostra tela de game over e pergunta se quer continuar
         showGameOver();
         
     } while (shouldContinue());
     
-    // Finalizar com a limpeza de recursos
     cleanupGame();
     keyboardDestroy();
     screenDestroy();

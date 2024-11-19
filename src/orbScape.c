@@ -13,7 +13,7 @@ static int continueGame = 1;
 static const char* BORDER = "+";
 static const screenColor BORDER_COLOR = YELLOW;
 
-// Delay usando o timerTimeOver
+
 static void customDelay() {
     int i;
     for (i = 0; i < 5; i++) {
@@ -23,12 +23,10 @@ static void customDelay() {
     }
 }
 
-// Tela de Game Over ou Vitória
+
 void showGameOver() {
-    // Limpa a tela
     screenClear();
 
-    // Seleciona a mensagem com base no nível atingido
     const char* victoryText[] = {
         "Congratulations!",
         "You Completed All Levels!",
@@ -45,35 +43,29 @@ void showGameOver() {
         "Press 'Q' to Quit"
     };
 
-    // Escolhe a mensagem correta com base no nível
+    // escolha do texto dependendo do resultado final
     const char** selectedText = (level.current == 10) ? victoryText : gameOverText;
 
-    // Percorre o texto selecionado
-    for (int i = 0; i < 5; i++) { // 5 é o número de linhas no maior array
-        // Define a cor do texto
+    // percorre o array de ponteiro que armazena os textos
+    for (int i = 0; i < 5; i++) { 
         screenSetColor((screenColor)(i + RED), BLACK);
-        // Posiciona o cursor no centro da tela
+        // posição do cursor
         screenGotoxy(MAXX / 2 - strlen(selectedText[i]) / 2, MAXY / 2 - 2 + i);
 
-        // Imprime o texto
         printf("%s", selectedText[i]);
 
-        // Exibe o score na linha apropriada (3ª linha em ambos os casos)
         if (i == 2) {
             screenSetColor(YELLOW, BLACK);
             printf("%d", score);
         }
 
-        // Atualiza a tela e delay
         screenUpdate();
         customDelay();
     }
 }
 
 
-
-
-// Verificar se o jogo deve continuar
+// verificação para continuar ou parar o jogo
 int shouldContinue() {
     int ch;
     while (1) {
@@ -85,7 +77,6 @@ int shouldContinue() {
     }
 }
 
-// Inicializar o game
 void initializeGame() {
     srand(time(NULL));
     gameOver = 0;
@@ -107,7 +98,6 @@ void initializeGame() {
     addEnemiesForLevel();
 }
 
-// Movimentar o jogador
 void handleInput(int key) {
     switch (key) {
         case 'a':
@@ -125,7 +115,6 @@ void handleInput(int key) {
     }
 }
 
-// Atualiza o estado do jogo
 void updateGame() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         enemies[i].x += enemies[i].direction * enemies[i].speed;
@@ -160,7 +149,6 @@ void updateGame() {
     }
 }
 
-// Renderiza o estado do jogo
 void renderGame() {
     screenClear();
 
@@ -197,7 +185,6 @@ void renderGame() {
     screenUpdate();
 }
 
-// Adiciona inimigos para o nível
 void addEnemiesForLevel() {
     int enemyCount = 0;
     int enemiesPerRow = level.enemyCount / ENEMY_ROWS;
@@ -220,12 +207,9 @@ void addEnemiesForLevel() {
     }
 }
 
-// Limpa recursos do jogo
 void cleanupGame() {
-    // Sem recursos para limpar
 }
 
-// Verifica se o jogo acabou
 int isGameOver() {
     return gameOver || (level.current == 10);
 }
