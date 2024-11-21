@@ -5,13 +5,13 @@
 #include <string.h>
 
 static Player player;
-static Enemy enemies[MAX_ENEMIES];
+static Enemy* enemies = NULL;
 static Level level;
 static int gameOver = 0;
 static int score = 0;
 static int continueGame = 1;
 static const char* BORDER = "+";
-static const screenColor BORDER_COLOR = YELLOW;
+static const screenColor BORDER_COLOR = YELLOW; //tirar duvida
 
 
 static void customDelay() {
@@ -27,7 +27,7 @@ static void customDelay() {
 void showGameOver() {
     screenClear();
 
-    const char* victoryText[] = {
+    const char* victoryText[] = { //verificar o que a const faz
         "Congratulations!",
         "You Completed All Levels!",
         "Your Final Score:",
@@ -48,8 +48,8 @@ void showGameOver() {
 
     // percorre o array de ponteiro que armazena os textos
     for (int i = 0; i < 5; i++) { 
-        screenSetColor((screenColor)(i + RED), BLACK);
-        // posição do cursor
+        screenSetColor((screenColor)(i + RED), BLACK); //verificar
+        // posição do texto
         screenGotoxy(MAXX / 2 - strlen(selectedText[i]) / 2, MAXY / 2 - 2 + i);
 
         printf("%s", selectedText[i]);
@@ -78,7 +78,7 @@ int shouldContinue() {
 }
 
 void initializeGame() {
-    srand(time(NULL));
+    srand(time(NULL)); //estudar isso
     gameOver = 0;
     score = 0;
 
@@ -91,6 +91,14 @@ void initializeGame() {
     level.enemyCount = INITIAL_ENEMIES;
     level.baseSpeed = 1;
 
+
+    enemies = (Enemy*)malloc(level.enemyCount * sizeof(Enemy));
+    if (enemies == NULL) {
+        printf("Erro ao alocar memória para os inimigos.\n");
+        exit(1);
+    }
+
+
     for (int i = 0; i < MAX_ENEMIES; i++) {
         enemies[i].active = 0;
     }
@@ -101,10 +109,10 @@ void initializeGame() {
 void handleInput(int key) {
     switch (key) {
         case 'a':
-            if (player.x > MINX + 1) player.x--;
+            if (player.x > MINX + 1) player.x--; //abda para esquerda
             break;
         case 'd':
-            if (player.x < MAXX - 1) player.x++;
+            if (player.x < MAXX - 1) player.x++; //anda para direita
             break;
         case 'w':
             if (player.y > MINY + 1) player.y--;
@@ -116,8 +124,10 @@ void handleInput(int key) {
 }
 
 void updateGame() {
+     
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        enemies[i].x += enemies[i].direction * enemies[i].speed;
+        enemies[i].x += enemies[i].direction * enemies[i].speed; //calcula a movimentação do inimigo
+        //verifica a colisão com as bordas
         if (enemies[i].x >= MAXX - 2 || enemies[i].x <= MINX + 1) {
             enemies[i].direction *= -1;
         }
@@ -130,7 +140,7 @@ void updateGame() {
         }
     }
 
-    if (player.y == MINY + 1) {
+    if (player.y == MINY + 1) { //verifica se chegou ao topo e verifica com o MINY porque o minimo começa em cima
         score += 100 * level.current;
 
         if (level.current == 10) {
@@ -141,6 +151,19 @@ void updateGame() {
         level.current++;
         level.enemyCount = INITIAL_ENEMIES + (level.current - 1) * 2;
         level.baseSpeed = 1 + (level.current - 1) / 2;
+
+         enemies = (Enemy*)realloc(enemies, level.enemyCount * sizeof(Enemy));
+        if (enemies == NULL) {
+            printf("Erro ao realocar memória\n");
+            exit(1);
+        }
+
+        
+        for (int i = 0; i < level.enemyCount; i++) {
+            if (i >= level.enemyCount - 2) { // config para novos inimigos
+                enemies[i].active = 0;
+            }
+        }
 
         player.y = MAXY - 2;
         player.x = MAXX / 2;
@@ -153,14 +176,14 @@ void renderGame() {
     screenClear();
 
     screenSetColor(BORDER_COLOR, BLACK);
-    for (int x = MINX; x <= MAXX; x++) {
+    for (int x = MINX; x <= MAXX; x++) { //percorre da esquerda para direita, do 1 ao 80
         screenGotoxy(x, MINY);
         printf("%s", BORDER);
         screenGotoxy(x, MAXY);
         printf("%s", BORDER);
     }
 
-    for (int y = MINY; y <= MAXY; y++) {
+    for (int y = MINY; y <= MAXY; y++) { //percorre de cima para baixo, do 1 ao 24
         screenGotoxy(MINX, y);
         printf("%s", BORDER);
         screenGotoxy(MAXX, y);
@@ -208,6 +231,10 @@ void addEnemiesForLevel() {
 }
 
 void cleanupGame() {
+    if (enemies != NULL) {
+        free(enemies);
+        enemies = NULL;
+    }
 }
 
 int isGameOver() {
