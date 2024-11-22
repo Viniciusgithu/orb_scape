@@ -11,10 +11,10 @@ static int gameOver = 0;
 static int score = 0;
 static int continueGame = 1;
 static const char* BORDER = "+";
-static const screenColor BORDER_COLOR = YELLOW; //tirar duvida
+static const screenColor BORDER_COLOR = YELLOW;
 
 
-static void customDelay() {
+static void customDelay() { //cria um delay
     int i;
     for (i = 0; i < 5; i++) {
         while (!timerTimeOver()) {
@@ -27,7 +27,7 @@ static void customDelay() {
 void showGameOver() {
     screenClear();
 
-    const char* victoryText[] = { //verificar o que a const faz
+    const char* victoryText[] = { //array de ponteiros para armazenar os textos
         "Congratulations!",
         "You Completed All Levels!",
         "Your Final Score:",
@@ -43,15 +43,14 @@ void showGameOver() {
         "Press 'Q' to Quit"
     };
 
-    // escolha do texto dependendo do resultado final
+    // condição para escolha do texto dependendo se o jogador ganhou ou não
     const char** selectedText = (level.current == 10) ? victoryText : gameOverText;
 
     // percorre o array de ponteiro que armazena os textos
     for (int i = 0; i < 5; i++) { 
-        screenSetColor((screenColor)(i + RED), BLACK); //verificar
+        screenSetColor((screenColor)(i + RED), BLACK); //percorre o array de ponteiros e as cores do enum
         // posição do texto
         screenGotoxy(MAXX / 2 - strlen(selectedText[i]) / 2, MAXY / 2 - 2 + i);
-
         printf("%s", selectedText[i]);
 
         if (i == 2) {
@@ -78,7 +77,7 @@ int shouldContinue() {
 }
 
 void initializeGame() {
-    srand(time(NULL)); //estudar isso
+    srand(time(NULL)); //gera numeros aleatórios de acordo com cada execução
     gameOver = 0;
     score = 0;
 
@@ -92,14 +91,14 @@ void initializeGame() {
     level.baseSpeed = 1;
 
 
-    enemies = (Enemy*)malloc(level.enemyCount * sizeof(Enemy));
+    enemies = (Enemy*)malloc(level.enemyCount * sizeof(Enemy)); //realoca a quantidade de inimigos
     if (enemies == NULL) {
         printf("Erro ao alocar memória para os inimigos.\n");
         exit(1);
     }
 
 
-    for (int i = 0; i < MAX_ENEMIES; i++) {
+    for (int i = 0; i < MAX_ENEMIES; i++) { //zera a quantidade de inimigos ativos
         enemies[i].active = 0;
     }
 
@@ -109,7 +108,7 @@ void initializeGame() {
 void handleInput(int key) {
     switch (key) {
         case 'a':
-            if (player.x > MINX + 1) player.x--; //abda para esquerda
+            if (player.x > MINX + 1) player.x--; //anda para esquerda
             break;
         case 'd':
             if (player.x < MAXX - 1) player.x++; //anda para direita
@@ -131,10 +130,10 @@ void updateGame() {
         if (enemies[i].x >= MAXX - 2 || enemies[i].x <= MINX + 1) {
             enemies[i].direction *= -1;
         }
-
+        //colisão do player com o inimigo
         if ((player.x == enemies[i].x && player.y == enemies[i].y) ||
-            (abs(player.x - enemies[i].x) == 1 && player.y == enemies[i].y) ||
-            (abs(player.y - enemies[i].y) == 1 && player.x == enemies[i].x)) {
+            (abs(player.x - enemies[i].x) == 1 && player.y == enemies[i].y) || //verifica se o player encosta no inimigo horizontalmente
+            (abs(player.y - enemies[i].y) == 1 && player.x == enemies[i].x)) { //verifica verticalmente
             gameOver = 1;
             return;
         }
@@ -149,23 +148,16 @@ void updateGame() {
         }
 
         level.current++;
-        level.enemyCount = INITIAL_ENEMIES + (level.current - 1) * 2;
+        level.enemyCount = INITIAL_ENEMIES + (level.current - 1) * 2; //adição de inimigos por nível
         level.baseSpeed = 1 + (level.current - 1) / 2;
 
-         enemies = (Enemy*)realloc(enemies, level.enemyCount * sizeof(Enemy));
+        enemies = (Enemy*)realloc(enemies, level.enemyCount * sizeof(Enemy));
         if (enemies == NULL) {
             printf("Erro ao realocar memória\n");
-            exit(1);
+            exit(1); //realoca dinamicamente a quantidade dos inimigos a cada nível
         }
 
-        
-        for (int i = 0; i < level.enemyCount; i++) {
-            if (i >= level.enemyCount - 2) { // config para novos inimigos
-                enemies[i].active = 0;
-            }
-        }
-
-        player.y = MAXY - 2;
+        player.y = MAXY - 2; //posiciona o jogador
         player.x = MAXX / 2;
 
         addEnemiesForLevel();
@@ -194,28 +186,29 @@ void renderGame() {
     screenGotoxy(player.x, player.y);
     printf("%c", player.sprite);
 
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (!enemies[i].active) continue;
+    for (int i = 0; i < MAX_ENEMIES; i++) { //definição da cor, posição e skin dos inimigos
+        if (!enemies[i].active) continue; //se o inimigo não estiver ativo, passa para o próximo
         screenSetColor(enemies[i].color, BLACK);
         screenGotoxy(enemies[i].x, enemies[i].y);
         printf("%c", enemies[i].sprite);
     }
 
-    screenSetColor(WHITE, BLACK);
+    screenSetColor(WHITE, BLACK); //definição da cor e posição do texto do level e score
     screenGotoxy(MINX + 2, MINY);
     printf("Level: %d | Score: %d", level.current, score);
 
     screenUpdate();
+    
 }
 
 void addEnemiesForLevel() {
-    int enemyCount = 0;
+    int enemyCount = 0; //inimigos que ja foram adicionados, começa em 0
     int enemiesPerRow = level.enemyCount / ENEMY_ROWS;
     if (enemiesPerRow == 0) enemiesPerRow = 1;
 
     for (int row = 0; row < ENEMY_ROWS && enemyCount < level.enemyCount; row++) {
         for (int col = 0; col < enemiesPerRow && enemyCount < level.enemyCount; col++) {
-            int idx = row * enemiesPerRow + col;
+            int idx = row * enemiesPerRow + col; //posição que o inimigo vai estar
             if (idx >= MAX_ENEMIES) break;
 
             enemies[idx].x = MINX + 2 + (rand() % (MAXX - MINX - 4));
@@ -231,12 +224,12 @@ void addEnemiesForLevel() {
 }
 
 void cleanupGame() {
-    if (enemies != NULL) {
+    if (enemies != NULL) { //libera a memória
         free(enemies);
         enemies = NULL;
     }
 }
 
 int isGameOver() {
-    return gameOver || (level.current == 10);
+    return gameOver || (level.current == 10); //verifica se o jogo terminou
 }
