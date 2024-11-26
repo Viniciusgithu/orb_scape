@@ -12,14 +12,14 @@
 #define INITIAL_ENEMIES 3
 #define ENEMY_ROWS 5
 
-// Estrutura para o jogador
+// estrutura para o jogador
 typedef struct {
     int x, y;
     char sprite;
     screenColor color;
 } Player;
 
-// Estrutura para o inimigo
+// estrutura para o inimigo
 typedef struct {
     int x, y;
     char sprite;
@@ -29,19 +29,19 @@ typedef struct {
     int active;
 } Enemy;
 
-// Estrutura para o nível
+// estrutura para o nível
 typedef struct {
     int current;
     int enemyCount;
     int baseSpeed;
 } Level;
 
-typedef struct {
-    char name[50];
-    int score;
-} PlayerScore;
+// typedef struct {
+//     char name[50];
+//     int score;
+// } PlayerScore;
 
-// Funções do jogo
+
 void initializeGame();
 void updateGame();
 void renderGame();
@@ -50,8 +50,6 @@ void cleanupGame();
 int isGameOver();
 int shouldContinue();
 void showGameOver();
-void showVictory();
-void resetGame();
 void addEnemiesForLevel();
 
 #endif

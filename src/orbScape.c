@@ -14,10 +14,10 @@ static const char* BORDER = "+";
 static const screenColor BORDER_COLOR = YELLOW;
 
 
-static void customDelay() { //cria um delay
+void customDelay() { //cria um delay
     int i;
     for (i = 0; i < 5; i++) {
-        while (!timerTimeOver()) {
+        while (timerTimeOver() == 0) { //enquanto retornar 0, o programa continua
             screenUpdate();
         }
     }
@@ -48,7 +48,7 @@ void showGameOver() {
 
     // percorre o array de ponteiro que armazena os textos
     for (int i = 0; i < 5; i++) { 
-        screenSetColor((screenColor)(i + RED), BLACK); //percorre o array de ponteiros e as cores do enum
+        screenSetColor((screenColor)(i + RED), BLACK); //percorre o array de ponteiros e define as cores do enum
         // posição do texto
         screenGotoxy(MAXX / 2 - strlen(selectedText[i]) / 2, MAXY / 2 - 2 + i);
         printf("%s", selectedText[i]);
@@ -91,7 +91,7 @@ void initializeGame() {
     level.baseSpeed = 1;
 
 
-    enemies = (Enemy*)malloc(level.enemyCount * sizeof(Enemy)); //realoca a quantidade de inimigos
+    enemies = malloc(level.enemyCount * sizeof(Enemy)); //aloca a quantidade inicial de inimigos
     if (enemies == NULL) {
         printf("Erro ao alocar memória para os inimigos.\n");
         exit(1);
@@ -151,7 +151,7 @@ void updateGame() {
         level.enemyCount = INITIAL_ENEMIES + (level.current - 1) * 2; //adição de inimigos por nível
         level.baseSpeed = 1 + (level.current - 1) / 2;
 
-        enemies = (Enemy*)realloc(enemies, level.enemyCount * sizeof(Enemy));
+        enemies = realloc(enemies, level.enemyCount * sizeof(Enemy));
         if (enemies == NULL) {
             printf("Erro ao realocar memória\n");
             exit(1); //realoca dinamicamente a quantidade dos inimigos a cada nível

@@ -17,13 +17,13 @@ int main() {
         initializeGame();
         
         while (!isGameOver()) {
-            if (keyhit()) {
-                ch = readch();
+            if (keyhit()) { //verifica se alguma tecla foi pressionada
+                ch = readch(); //le a tecla pressionada
                 if (ch == 10) break;  // 10 é ENTER
-                handleInput(ch);
+                handleInput(ch); //processar e ler a movimentação do jogador
             }
             
-            if (timerTimeOver() == 1) {
+            if (timerTimeOver() == 1) {  //se o tempo tiver esgotado
                 updateGame();
                 renderGame();
             }
@@ -31,7 +31,7 @@ int main() {
         
         showGameOver();
         
-    } while (shouldContinue());
+    } while (shouldContinue()); //verifica se o jogador quer reiniciar o jogo ou sair
     
     cleanupGame();
     keyboardDestroy();

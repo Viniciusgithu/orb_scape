@@ -36,7 +36,7 @@ int getTimeDiff() //calcula a diferença do tempo atual com o momento do timer
     return (int) diff;
 }
 
-int timerTimeOver()
+int  timerTimeOver() //calcula a diferença entre o momento atual e o momento que o temporizador foi inicializado
 {
     int ret = 0;
 
