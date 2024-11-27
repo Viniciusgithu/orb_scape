@@ -26,7 +26,6 @@ typedef struct {
     screenColor color;
     int direction;
     int speed;
-    int active;
 } Enemy;
 
 // estrutura para o nível
@@ -36,10 +35,6 @@ typedef struct {
     int baseSpeed;
 } Level;
 
-// typedef struct {
-//     char name[50];
-//     int score;
-// } PlayerScore;
 
 
 void initializeGame();

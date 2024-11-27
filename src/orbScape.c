@@ -4,14 +4,14 @@
 #include "timer.h"
 #include <string.h>
 
-static Player player;
-static Enemy* enemies = NULL;
-static Level level;
-static int gameOver = 0;
-static int score = 0;
-static int continueGame = 1;
-static const char* BORDER = "+";
-static const screenColor BORDER_COLOR = YELLOW;
+Player player;
+Enemy* enemies = NULL;
+Level level;
+int gameOver = 0;
+int score = 0;
+int continueGame = 1;
+const char* BORDER = "+";
+const screenColor BORDER_COLOR = YELLOW;
 
 
 void customDelay() { //cria um delay
@@ -85,7 +85,7 @@ void initializeGame() {
     player.y = MAXY - 2;
     player.sprite = '@';
     player.color = CYAN;
-
+    
     level.current = 1;
     level.enemyCount = INITIAL_ENEMIES;
     level.baseSpeed = 1;
@@ -97,10 +97,6 @@ void initializeGame() {
         exit(1);
     }
 
-
-    for (int i = 0; i < MAX_ENEMIES; i++) { //zera a quantidade de inimigos ativos
-        enemies[i].active = 0;
-    }
 
     addEnemiesForLevel();
 }
@@ -148,7 +144,7 @@ void updateGame() {
         }
 
         level.current++;
-        level.enemyCount = INITIAL_ENEMIES + (level.current - 1) * 2; //adição de inimigos por nível
+        level.enemyCount += 1;
         level.baseSpeed = 1 + (level.current - 1) / 2;
 
         enemies = realloc(enemies, level.enemyCount * sizeof(Enemy));
@@ -187,7 +183,6 @@ void renderGame() {
     printf("%c", player.sprite);
 
     for (int i = 0; i < MAX_ENEMIES; i++) { //definição da cor, posição e skin dos inimigos
-        if (!enemies[i].active) continue; //se o inimigo não estiver ativo, passa para o próximo
         screenSetColor(enemies[i].color, BLACK);
         screenGotoxy(enemies[i].x, enemies[i].y);
         printf("%c", enemies[i].sprite);
@@ -201,27 +196,20 @@ void renderGame() {
     
 }
 
+
 void addEnemiesForLevel() {
-    int enemyCount = 0; //inimigos que ja foram adicionados, começa em 0
-    int enemiesPerRow = level.enemyCount / ENEMY_ROWS;
-    if (enemiesPerRow == 0) enemiesPerRow = 1;
+    // Configura os inimigos para o nível atual
+    for (int i = 0; i < level.enemyCount; i++) {
 
-    for (int row = 0; row < ENEMY_ROWS && enemyCount < level.enemyCount; row++) {
-        for (int col = 0; col < enemiesPerRow && enemyCount < level.enemyCount; col++) {
-            int idx = row * enemiesPerRow + col; //posição que o inimigo vai estar
-            if (idx >= MAX_ENEMIES) break;
-
-            enemies[idx].x = MINX + 2 + (rand() % (MAXX - MINX - 4));
-            enemies[idx].y = MINY + 2 + (row * 3);
-            enemies[idx].sprite = 'X';
-            enemies[idx].color = RED;
-            enemies[idx].direction = (rand() % 2) ? 1 : -1;
-            enemies[idx].speed = level.baseSpeed + (rand() % 2);
-            enemies[idx].active = 1;
-            enemyCount++;
-        }
+        enemies[i].x = MINX + 2 + (rand() % (MAXX - MINX - 4)); // posição aleatória horizontal
+        enemies[i].y = MINY + 2 + (i * 2); // distribuição vertical, cada inimigo em uma nova linha
+        enemies[i].sprite = 'X'; // caractere que representa o inimigo
+        enemies[i].color = RED; // cor do inimigo
+        enemies[i].direction = (rand() % 2) ? 1 : -1; // direção aleatória (esquerda ou direita)
+        enemies[i].speed = level.baseSpeed + (rand() % 2); // velocidade com base no nível
     }
 }
+
 
 void cleanupGame() {
     if (enemies != NULL) { //libera a memória
