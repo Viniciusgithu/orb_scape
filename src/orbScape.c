@@ -9,7 +9,6 @@ Enemy* enemies = NULL;
 Level level;
 int gameOver = 0;
 int score = 0;
-int continueGame = 1;
 const char* BORDER = "+";
 const screenColor BORDER_COLOR = YELLOW;
 
@@ -198,10 +197,9 @@ void renderGame() {
 
 
 void addEnemiesForLevel() {
-    // Configura os inimigos para o nível atual
     for (int i = 0; i < level.enemyCount; i++) {
 
-        enemies[i].x = MINX + 2 + (rand() % (MAXX - MINX - 4)); // posição aleatória horizontal
+        enemies[i].x = MINX + 2 + (rand() % (MAXX - MINX - 4)); // posição horizontal
         enemies[i].y = MINY + 2 + (i * 2); // distribuição vertical, cada inimigo em uma nova linha
         enemies[i].sprite = 'X'; // caractere que representa o inimigo
         enemies[i].color = RED; // cor do inimigo
